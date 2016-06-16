@@ -64,11 +64,14 @@ class Asset extends Container\AbstractStandalone
     {
         $ret = '';
 
-        if (
-            $this->service->getConfiguration()->isDebug()
-            && !$this->service->getConfiguration()->isCombine()
-            && $asset instanceof AssetCollection
-        ) {
+        if (isset($options['combine'])) {
+            $combine = (bool)$options['combine'];
+        } else {
+            $combine = !($this->service->getConfiguration()->isDebug()
+                && !$this->service->getConfiguration()->isCombine());
+        }
+
+        if (!$combine && $asset instanceof AssetCollection) {
             // Move assets as single instance not as a collection
             foreach ($asset as $value) {
                 /** @var AssetCollection $value */
