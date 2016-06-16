@@ -473,7 +473,7 @@ class Service
      *
      * @param AssetInterface $asset     Asset to write
      */
-    public function writeAsset(AssetInterface $asset)
+    public function writeAsset(AssetInterface $asset, $options)
     {
         // We're not interested in saving assets on request
         if (!$this->configuration->getBuildOnRequest()) {

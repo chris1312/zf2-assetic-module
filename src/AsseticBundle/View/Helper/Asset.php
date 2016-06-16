@@ -50,7 +50,7 @@ class Asset extends Container\AbstractStandalone
         }
 
         $asset = $this->service->getAssetManager()->get($collectionName);
-        $this->service->writeAsset($asset);
+        $this->service->writeAsset($asset, $options);
 
         return $this->setupAsset($asset, $options);
     }
