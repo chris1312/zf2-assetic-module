@@ -473,7 +473,7 @@ class Service
      *
      * @param AssetInterface $asset     Asset to write
      */
-    public function writeAsset(AssetInterface $asset, $options)
+    public function writeAsset(AssetInterface $asset, array $options = [])
     {
         // We're not interested in saving assets on request
         if (!$this->configuration->getBuildOnRequest()) {
@@ -482,7 +482,7 @@ class Service
 
         // Write asset on disk in every request
         if (!$this->configuration->getWriteIfChanged()) {
-            $this->write($asset);
+            $this->write($asset, $options);
         }
 
         $target = $this->configuration->getWebPath($asset->getTargetPath());
@@ -491,21 +491,27 @@ class Service
 
         // And long requested optimization
         if (!$created || $isChanged) {
-            $this->write($asset);
+            $this->write($asset, $options);
         }
     }
 
     /**
      * @param AssetInterface $asset
      */
-    protected function write(AssetInterface $asset)
+    protected function write(AssetInterface $asset, array $options = [])
     {
         $umask = $this->configuration->getUmask();
         if (null !== $umask) {
             $umask = umask($umask);
         }
 
-        if ($this->configuration->isDebug() && !$this->configuration->isCombine() && $asset instanceof AssetCollection) {
+        $combine = !($this->configuration->isDebug() && !$this->configuration->isCombine());
+
+        if (isset($options['combine'])) {
+            $combine = (bool)$options['combine'];
+        }
+
+        if (!$combine && $asset instanceof AssetCollection) {
             foreach ($asset as $item) {
                 $this->writeAsset($item);
             }
